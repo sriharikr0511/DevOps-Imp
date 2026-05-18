@@ -1,0 +1,104 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #f0f2f5;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 16px;
+}
+
+.container {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 520px;
+  padding: 32px;
+}
+
+header { margin-bottom: 24px; }
+h1 { font-size: 24px; font-weight: 600; color: #1a1a2e; }
+.subtitle { font-size: 13px; color: #888; margin-top: 4px; }
+
+.input-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+input[type="text"] {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+input[type="text"]:focus { border-color: #6c63ff; }
+
+.btn-add {
+  padding: 10px 20px;
+  background: #6c63ff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-add:hover { background: #574fd6; }
+
+.task-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+
+.task-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1.5px solid #f0f0f0;
+  border-radius: 10px;
+  background: #fafafa;
+  transition: background 0.15s;
+}
+.task-list li.done { background: #f5f5f5; }
+.task-list li.done .title { text-decoration: line-through; color: #aaa; }
+
+.check {
+  width: 22px;
+  height: 22px;
+  border: 2px solid #6c63ff;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  font-size: 12px;
+  color: #6c63ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.done .check { background: #6c63ff; color: #fff; }
+
+.title { flex: 1; font-size: 14px; color: #333; }
+.date { font-size: 11px; color: #bbb; flex-shrink: 0; }
+
+.btn-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  color: #ccc;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+.btn-delete:hover { color: #e74c3c; background: #fef2f2; }
+
+.msg { text-align: center; color: #aaa; font-size: 14px; margin-top: 20px; }
+.msg.error { color: #e74c3c; }
