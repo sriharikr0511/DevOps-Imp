@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/YourUsername/devops-lab.git'
+                git branch: 'main', url: 'https://github.com/Nikhiill03/taskmanager-devops.git'
                 echo 'Repository cloned successfully'
             }
         }
