@@ -48,9 +48,10 @@ pipeline {
 
                         script {
                             def scannerHome = tool 'SonarScanner'
+                            def scannerPath = scannerHome.replace('\\', '/')
 
                             sh """
-                                ${scannerHome}/bin/sonar-scanner \
+                                ${scannerPath}/bin/sonar-scanner \
                                   -Dsonar.projectKey=taskmanager-backend \
                                   -Dsonar.projectName="TaskManager Backend" \
                                   -Dsonar.sources=. \
