@@ -3,13 +3,13 @@ pipeline {
     
     environment {
         SONARQUBE_URL = 'http://localhost:9000'
-        SONARQUBE_TOKEN = credentials('sonarqube-token')
+        SONARQUBE_TOKEN = credentials('sonar-token')
     }
     
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/Nikhiill03/taskmanager-devops.git'
+                git branch: 'main', url: 'https://github.com/sriharikr0511/DevOps-Imp.git'
                 echo 'Repository cloned successfully'
             }
         }
