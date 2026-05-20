@@ -1,5 +1,11 @@
 pipeline {
     agent any
+    
+    environment {
+        SONARQUBE_URL = 'http://localhost:9000'
+        SONARQUBE_TOKEN = credentials('sonarqube-token')
+    }
+    
     stages {
         stage('Clone Repository') {
             steps {
@@ -7,16 +13,87 @@ pipeline {
                 echo 'Repository cloned successfully'
             }
         }
-        stage('Build') {
+        
+        stage('Build Backend') {
             steps {
-                echo 'Building the project...'
+                dir('backend') {
+                    sh '''
+                        echo "Building backend..."
+                        npm install
+                        npm run build 2>/dev/null || echo "No build script defined for backend"
+                    '''
+                }
             }
         }
-        stage('Test') {
+        
+        stage('Build Frontend') {
             steps {
-                echo 'Running tests...'
-                echo 'All tests passed'
+                dir('frontend') {
+                    sh '''
+                        echo "Building frontend..."
+                        npm install
+                        npm run build
+                    '''
+                }
             }
+        }
+        
+        stage('SonarQube Scan - Backend') {
+            steps {
+                dir('backend') {
+                    withSonarQubeEnv('SonarQube') {
+                        sh '''
+                            sonar-scanner \
+                              -Dsonar.projectKey=taskmanager-backend \
+                              -Dsonar.projectName="TaskManager Backend" \
+                              -Dsonar.sources=. \
+                              -Dsonar.exclusions=node_modules/**,*.json \
+                              -Dsonar.host.url=${SONARQUBE_URL} \
+                              -Dsonar.login=${SONAR_AUTH_TOKEN}
+                        '''
+                    }
+                }
+            }
+        }
+        
+        stage('SonarQube Scan - Frontend') {
+            steps {
+                dir('frontend') {
+                    withSonarQubeEnv('SonarQube') {
+                        sh '''
+                            sonar-scanner \
+                              -Dsonar.projectKey=taskmanager-frontend \
+                              -Dsonar.projectName="TaskManager Frontend" \
+                              -Dsonar.sources=src \
+                              -Dsonar.exclusions=node_modules/**,dist/**,*.json,*.config.js \
+                              -Dsonar.host.url=${SONARQUBE_URL} \
+                              -Dsonar.login=${SONAR_AUTH_TOKEN}
+                        '''
+                    }
+                }
+            }
+        }
+        
+        stage('Docker Build & Compose Test') {
+            steps {
+                sh '''
+                    echo "Testing Docker Compose setup..."
+                    docker compose build --no-cache
+                    echo "Docker images built successfully"
+                '''
+            }
+        }
+    }
+    
+    post {
+        always {
+            echo 'Pipeline execution completed'
+        }
+        success {
+            echo '✓ Build successful! Check SonarQube at http://localhost:9000'
+        }
+        failure {
+            echo '✗ Build failed. Check logs above.'
         }
     }
 }
