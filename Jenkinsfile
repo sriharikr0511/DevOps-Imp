@@ -1,19 +1,22 @@
 pipeline {
     agent any
-    
+
     environment {
         SONARQUBE_URL = 'http://localhost:9000'
         SONARQUBE_TOKEN = credentials('sonar-token')
     }
-    
+
     stages {
+
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/sriharikr0511/DevOps-Imp.git'
+                git branch: 'main',
+                    url: 'https://github.com/sriharikr0511/DevOps-Imp.git'
+
                 echo 'Repository cloned successfully'
             }
         }
-        
+
         stage('Build Backend') {
             steps {
                 dir('backend') {
@@ -25,7 +28,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Build Frontend') {
             steps {
                 dir('frontend') {
@@ -37,43 +40,53 @@ pipeline {
                 }
             }
         }
-        
+
         stage('SonarQube Scan - Backend') {
             steps {
                 dir('backend') {
                     withSonarQubeEnv('SonarQube') {
-                        sh '''
-                            sonar-scanner \
-                              -Dsonar.projectKey=taskmanager-backend \
-                              -Dsonar.projectName="TaskManager Backend" \
-                              -Dsonar.sources=. \
-                              -Dsonar.exclusions=node_modules/**,*.json \
-                              -Dsonar.host.url=${SONARQUBE_URL} \
-                              -Dsonar.login=${SONAR_AUTH_TOKEN}
-                        '''
+
+                        script {
+                            def scannerHome = tool 'SonarScanner'
+
+                            sh """
+                                ${scannerHome}/bin/sonar-scanner \
+                                  -Dsonar.projectKey=taskmanager-backend \
+                                  -Dsonar.projectName="TaskManager Backend" \
+                                  -Dsonar.sources=. \
+                                  -Dsonar.exclusions=node_modules/**,*.json
+                            """
+                        }
+
                     }
                 }
             }
         }
-        
+
         stage('SonarQube Scan - Frontend') {
             steps {
                 dir('frontend') {
                     withSonarQubeEnv('SonarQube') {
-                        sh '''
-                            sonar-scanner \
-                              -Dsonar.projectKey=taskmanager-frontend \
-                              -Dsonar.projectName="TaskManager Frontend" \
-                              -Dsonar.sources=src \
-                              -Dsonar.exclusions=node_modules/**,dist/**,*.json,*.config.js \
-                              -Dsonar.host.url=${SONARQUBE_URL} \
-                              -Dsonar.login=${SONAR_AUTH_TOKEN}
-                        '''
+
+                        script {
+                            def scannerHome = tool 'SonarScanner'
+
+                            sh """
+                                ${scannerHome}/bin/sonar-scanner \
+                                  -Dsonar.projectKey=taskmanager-frontend \
+                                  -Dsonar.projectName="TaskManager Frontend" \
+                                  -Dsonar.sources=src \
+                                  -Dsonar.exclusions=node_modules/**,dist/**,*.json,*.config.js \
+                                  -Dsonar.host.url=${SONARQUBE_URL} \
+                                  -Dsonar.login=${SONARQUBE_TOKEN}
+                            """
+                        }
+
                     }
                 }
             }
         }
-        
+
         stage('Docker Build & Compose Test') {
             steps {
                 sh '''
@@ -84,14 +97,17 @@ pipeline {
             }
         }
     }
-    
+
     post {
+
         always {
             echo 'Pipeline execution completed'
         }
+
         success {
             echo '✓ Build successful! Check SonarQube at http://localhost:9000'
         }
+
         failure {
             echo '✗ Build failed. Check logs above.'
         }
