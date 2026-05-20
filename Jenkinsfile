@@ -71,15 +71,14 @@ pipeline {
 
                         script {
                             def scannerHome = tool 'SonarScanner'
+                            def scannerPath = scannerHome.replace('\\', '/')
 
                             sh """
-                                ${scannerHome}/bin/sonar-scanner \
+                                ${scannerPath}/bin/sonar-scanner \
                                   -Dsonar.projectKey=taskmanager-frontend \
                                   -Dsonar.projectName="TaskManager Frontend" \
                                   -Dsonar.sources=src \
-                                  -Dsonar.exclusions=node_modules/**,dist/**,*.json,*.config.js \
-                                  -Dsonar.host.url=${SONARQUBE_URL} \
-                                  -Dsonar.login=${SONARQUBE_TOKEN}
+                                  -Dsonar.exclusions=node_modules/**,dist/**,*.json,*.config.js
                             """
                         }
 
